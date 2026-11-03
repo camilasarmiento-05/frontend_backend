@@ -1,4 +1,5 @@
 import Aprendiz from "../models/Aprendiz.js";
+import Curso from "../models/Curso.js";
 
 const aprendizCtrl = {};
 
@@ -19,14 +20,48 @@ aprendizCtrl.registerAprendiz = async (req, res) => {
   }
 };
 
+const escapeRegex = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 // Listar aprendices. populate("curso") reemplaza el id por el documento completo del curso.
+//
+// Sin "page" devuelve el arreglo completo (lo usa el inicio para sus contadores).
+// Con "page" devuelve paginado: GET /api/aprendices?page=1&limit=10&q=texto
+//   -> { docs, total, page, pages, limit }
 aprendizCtrl.getAprendices = async (req, res) => {
-  const { status } = req.query;
+  const { status, page, limit, q } = req.query;
   try {
-    const aprendices = await Aprendiz.find(status ? { status } : {})
+    const filtro = status ? { status } : {};
+
+    if (page === undefined) {
+      const aprendices = await Aprendiz.find(filtro).populate("curso").sort({ createdAt: -1 });
+      return res.json(aprendices);
+    }
+
+    // Busqueda por documento, nombre, correo o curso (nombre/codigo).
+    const texto = String(q || "").trim();
+    if (texto) {
+      const regex = new RegExp(escapeRegex(texto), "i");
+      const cursos = await Curso.find({ $or: [{ nombre: regex }, { codigo: regex }] }).select("_id");
+      filtro.$or = [
+        { documento: regex },
+        { nombre: regex },
+        { email: regex },
+        { curso: { $in: cursos.map((c) => c._id) } },
+      ];
+    }
+
+    const porPagina = Math.min(Math.max(parseInt(limit, 10) || 10, 1), 100);
+    const total = await Aprendiz.countDocuments(filtro);
+    const pages = Math.max(Math.ceil(total / porPagina), 1);
+    const actual = Math.min(Math.max(parseInt(page, 10) || 1, 1), pages);
+
+    const docs = await Aprendiz.find(filtro)
       .populate("curso")
-      .sort({ createdAt: -1 });
-    res.json(aprendices);
+      .sort({ createdAt: -1, _id: -1 })
+      .skip((actual - 1) * porPagina)
+      .limit(porPagina);
+
+    res.json({ docs, total, page: actual, pages, limit: porPagina });
   } catch (error) {
     res.status(400).json({ msg: "No fue posible terminar la operacion" });
   }
