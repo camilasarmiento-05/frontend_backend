@@ -1,5 +1,5 @@
 import Swal from "sweetalert2";
-import { esc, errMsg } from "@/utils/format";
+import { errMsg } from "@/utils/format";
 
 // Todas las alertas de la app usan SweetAlert2 (nada de alert/confirm de window).
 const base = { confirmButtonColor: "#39A900", cancelButtonColor: "#6b7a72", confirmButtonText: "Entendido" };
@@ -12,8 +12,9 @@ const Toast = Swal.mixin({
 export const toast = (msg, type = "ok") => Toast.fire({ icon: type === "bad" ? "error" : "success", title: msg });
 export const fail = (title, text) => S.fire({ icon: "error", title, text });
 
-export const avisar = (lista, despues) =>
-  S.fire({ icon: "warning", title: "Revisa los datos", html: `<ul class="swal-list">${lista.map((m) => `<li>${esc(m)}</li>`).join("")}</ul>` })
+// Aviso de validación: muestra UN solo mensaje (el primer campo con problema, en el orden del formulario).
+export const avisar = (msg, despues) =>
+  S.fire({ icon: "warning", title: "Revisa los datos", text: Array.isArray(msg) ? msg[0] : msg })
     .then(() => despues && despues());
 
 export async function confirmar(title, msg, ok, onOk, danger) {

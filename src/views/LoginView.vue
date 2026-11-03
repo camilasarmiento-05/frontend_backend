@@ -16,13 +16,13 @@ const emailEl = ref(null);
 const passEl = ref(null);
 
 async function ingresar() {
-  const email = form.email.trim(), password = form.password, errs = [];
-  if (!email) errs.push("Escribe tu correo");
-  else if (!emailOk(email)) errs.push("Escribe un correo válido, por ejemplo nombre@sena.edu.co");
-  if (!password) errs.push("Escribe tu contraseña");
-  bad.email = !email || !emailOk(email);
-  bad.password = !password;
-  if (errs.length) return avisar(errs, () => (bad.email ? emailEl.value : passEl.value)?.focus());
+  const email = form.email.trim(), password = form.password;
+  bad.email = false;
+  bad.password = false;
+  // Un solo aviso a la vez, en el orden de la pantalla: primero el correo y luego la contraseña.
+  if (!email) { bad.email = true; return avisar("Escribe tu correo", () => emailEl.value?.focus()); }
+  if (!emailOk(email)) { bad.email = true; return avisar("Escribe un correo válido, por ejemplo nombre@sena.edu.co", () => emailEl.value?.focus()); }
+  if (!password) { bad.password = true; return avisar("Escribe tu contraseña", () => passEl.value?.focus()); }
 
   busy.value = true;
   try {

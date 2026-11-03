@@ -2,7 +2,7 @@ export const esc = (v) =>
   String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
 export const errMsg = (e) =>
-  e.response?.data?.errors?.join(". ") || e.response?.data?.msg || "No se pudo conectar con el servidor";
+  e.response?.data?.errors?.[0] || e.response?.data?.msg || "No se pudo conectar con el servidor";
 
 export const emailOk = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 

@@ -19,6 +19,7 @@ export const VIEWS = {
   aprendices: {
     key: "aprendices", title: "Aprendices", sub: "Personas en formación y su curso", noun: "aprendiz",
     url: "/aprendices", create: "/aprendices/register", update: "/aprendices/update/", edit: true,
+    paginado: true, // el listado viene del backend de 10 en 10 (ver CrudView)
     fields: [
       { k: "documento", l: "Documento" },
       { k: "nombre", l: "Nombre completo" },

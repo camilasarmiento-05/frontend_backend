@@ -29,20 +29,24 @@ props.fields.forEach((f) => {
 const opciones = computed(() => props.cursos.filter((c) => c.status === 0 || c._id === form.curso));
 
 const plain = (l) => l.replace(/\s*\(.*\)/, "");
+// Valida en el mismo orden en que se ven los campos y se detiene en el PRIMER error:
+// se avisa de uno en uno, y solo ese campo se marca en rojo.
 function validar() {
-  const errs = [];
-  props.fields.forEach((f) => {
+  props.fields.forEach((f) => { bad[f.k] = false; });
+  for (const f of props.fields) {
     const v = String(form[f.k] ?? "").trim();
     let m = "";
     if (!v && !(f.k === "password" && !isNew)) m = "es obligatorio";
     else if (f.t === "email" && !emailOk(v)) m = "debe ser un correo válido, por ejemplo nombre@sena.edu.co";
     else if (f.t === "password" && v && v.length < 6) m = "debe tener al menos 6 caracteres";
     else if (f.t === "number" && !(Number(v) > 0)) m = "debe ser un número mayor que 0";
-    bad[f.k] = !!m;
-    if (m) errs.push(`${plain(f.l)} ${m}`);
-  });
-  if (errs.length) avisar(errs, () => raiz.value?.querySelector(".field.bad input:not([type=hidden]), .field.bad .dd-btn")?.focus());
-  return !errs.length;
+    if (m) {
+      bad[f.k] = true;
+      avisar(`${plain(f.l)} ${m}`, () => raiz.value?.querySelector(".field.bad input:not([type=hidden]), .field.bad .dd-btn")?.focus());
+      return false;
+    }
+  }
+  return true;
 }
 
 async function enviar() {

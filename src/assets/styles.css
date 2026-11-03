@@ -107,8 +107,28 @@ tbody tr:hover{background:var(--g50)}
 .badge{display:inline-block;padding:.15rem .8rem;border-radius:999px;font-weight:700;font-size:.9rem}
 .badge.on{background:var(--g100);color:var(--g700)}
 .badge.off{background:#f1e4e2;color:var(--bad)}
-.acts{display:flex;gap:.5rem;justify-content:flex-end;white-space:nowrap}
-.acts .btn{padding:.45rem .9rem;font-size:.95rem}
+.th-acts{text-align:center}
+.acts{display:flex;gap:.5rem;justify-content:center;white-space:nowrap}
+.ibtn{width:40px;height:40px;display:grid;place-items:center;border:0;border-radius:10px;background:var(--g100);color:var(--g800);transition:background .15s,transform .1s}
+.ibtn svg{width:1.25rem;height:1.25rem}
+.ibtn:hover{background:#d3ebc3}
+.ibtn:active{transform:scale(.94)}
+.ibtn:focus-visible,.pbtn:focus-visible{outline:3px solid var(--g500);outline-offset:2px}
+.ibtn.off{background:#f6e3e1;color:var(--bad)}
+.ibtn.off:hover{background:#f0cdc9}
+.ibtn.on{background:var(--g500);color:#fff}
+.ibtn.on:hover{background:var(--g700)}
+.scroll.cambiando{opacity:.5;pointer-events:none;transition:opacity .15s}
+.pager{display:flex;flex-wrap:wrap;gap:.75rem 1rem;align-items:center;justify-content:space-between;padding:.9rem 1.25rem;border-top:1px solid var(--line);background:var(--g50)}
+.pager-info{color:var(--mute);font-size:.95rem}
+.pager-btns{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center}
+.pbtn{min-width:40px;height:40px;padding:0 .6rem;display:grid;place-items:center;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--g900);font-weight:700;font-size:1rem;transition:background .15s,border-color .15s}
+.pbtn svg{width:1.2rem;height:1.2rem}
+.pbtn:hover:not([disabled]):not(.cur){background:var(--g100);border-color:var(--g400)}
+.pbtn.cur{background:var(--g500);border-color:var(--g500);color:#fff;cursor:default}
+.pbtn[disabled]{opacity:.45;cursor:not-allowed}
+.pbtn.cur[disabled]{opacity:1}
+.pager-gap{padding:0 .25rem;color:var(--mute)}
 .empty{padding:4rem 1rem;text-align:center;color:var(--mute)}
 .empty strong{display:block;font-size:1.3rem;color:var(--g900);margin-bottom:.3rem}
 .skel{height:220px;background:linear-gradient(90deg,#fff 25%,var(--g100) 50%,#fff 75%);background-size:200% 100%;animation:sk 1.2s infinite}
