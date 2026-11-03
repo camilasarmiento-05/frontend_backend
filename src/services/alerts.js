@@ -3,7 +3,8 @@ import { errMsg } from "@/utils/format";
 
 // Todas las alertas de la app usan SweetAlert2 (nada de alert/confirm de window).
 const base = { confirmButtonColor: "#39A900", cancelButtonColor: "#6b7a72", confirmButtonText: "Entendido" };
-export const S = Swal.mixin(base);
+// Las alertas con botones solo se cierran con sus botones (Cancelar / Entendido), no con clic afuera ni Escape.
+export const S = Swal.mixin({ ...base, allowOutsideClick: false, allowEscapeKey: false });
 const Toast = Swal.mixin({
   ...base, toast: true, position: "top-end", showConfirmButton: false, timer: 3800, timerProgressBar: true,
   didOpen: (t) => { t.onmouseenter = Swal.stopTimer; t.onmouseleave = Swal.resumeTimer; }
@@ -21,7 +22,6 @@ export async function confirmar(title, msg, ok, onOk, danger) {
   const r = await S.fire({
     title, text: msg, icon: danger ? "warning" : "question", showCancelButton: true, confirmButtonText: ok,
     cancelButtonText: "Cancelar", reverseButtons: true, focusCancel: !!danger, showLoaderOnConfirm: true,
-    allowOutsideClick: () => !Swal.isLoading(),
     preConfirm: async () => {
       try { return (await onOk()) ?? true; }
       catch (e) { Swal.showValidationMessage(errMsg(e)); return false; }

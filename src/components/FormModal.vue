@@ -1,8 +1,8 @@
 <script setup>
 // Formulario en ventana modal para crear/editar. Valida sin atributos HTML y avisa con SweetAlert2.
-import { reactive, ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { reactive, ref, computed, onMounted } from "vue";
 import CursoSelect from "./CursoSelect.vue";
-import { avisar, Swal } from "@/services/alerts";
+import { avisar } from "@/services/alerts";
 import { emailOk } from "@/utils/format";
 
 const props = defineProps({
@@ -60,17 +60,15 @@ async function enviar() {
   }
 }
 
-const tecla = (e) => { if (e.key === "Escape" && !Swal.isVisible()) emit("close"); };
+// La ventana solo se cierra con el botón "Cancelar" (o al guardar): ni clic afuera ni Escape.
 onMounted(() => {
-  document.addEventListener("keydown", tecla);
   (raiz.value?.querySelector("input:not([type=hidden])") || raiz.value?.querySelector("[type=submit]"))?.focus();
 });
-onBeforeUnmount(() => document.removeEventListener("keydown", tecla));
 </script>
 
 <template>
   <Teleport to="body">
-    <div class="overlay" @mousedown.self="emit('close')">
+    <div class="overlay">
       <div class="modal" role="dialog" aria-modal="true" ref="raiz">
         <h3>{{ title }}</h3>
         <form novalidate @submit.prevent="enviar">
