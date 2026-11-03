@@ -3,6 +3,16 @@ import Curso from "../models/Curso.js";
 
 const aprendizCtrl = {};
 
+// Si la base de datos rechaza un valor repetido (indice unico, error 11000),
+// se responde con UN solo mensaje que dice cual campo esta repetido.
+const msgDuplicado = (error) => {
+  if (error?.code !== 11000) return null;
+  const campo = Object.keys(error.keyPattern || error.keyValue || {})[0];
+  if (campo === "email") return "El email ya esta registrado";
+  if (campo === "documento") return "El documento ya esta registrado";
+  return "Ya existe un aprendiz con esos datos";
+};
+
 // Registrar un nuevo aprendiz
 aprendizCtrl.registerAprendiz = async (req, res) => {
   const { documento, nombre, email, curso } = req.body;
@@ -16,7 +26,8 @@ aprendizCtrl.registerAprendiz = async (req, res) => {
     await newAprendiz.save();
     res.json({ msg: "Aprendiz registrado correctamente" });
   } catch (error) {
-    res.status(400).json({ msg: "No fue posible terminar la operacion" });
+    const dup = msgDuplicado(error);
+    res.status(400).json({ msg: dup || "No fue posible terminar la operacion", ...(dup && { errors: [dup] }) });
   }
 };
 
@@ -102,7 +113,8 @@ aprendizCtrl.updateAprendiz = async (req, res) => {
     });
     res.json({ msg: "Aprendiz actualizado correctamente" });
   } catch (error) {
-    res.status(400).json({ msg: "No fue posible terminar la operacion" });
+    const dup = msgDuplicado(error);
+    res.status(400).json({ msg: dup || "No fue posible terminar la operacion", ...(dup && { errors: [dup] }) });
   }
 };
 

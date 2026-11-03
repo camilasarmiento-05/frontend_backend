@@ -46,4 +46,19 @@ aprendizHelper.validateExistDocumento = async (documento, id = null) => {
   }
 };
 
+/**
+ * Valida que el email no este repetido en otro aprendiz.
+ * @param {string} email
+ * @param {string} [id=null] - Id a excluir (se usa al actualizar).
+ * @throws {Error} Si el email ya esta registrado.
+ */
+aprendizHelper.validateExistEmail = async (email, id = null) => {
+  const aprendiz = await Aprendiz.findOne({ email: email.toLowerCase().trim() });
+  if (aprendiz) {
+    if (!id || aprendiz._id.toString() !== id.toString()) {
+      throw new Error("El email ya esta registrado");
+    }
+  }
+};
+
 export { aprendizHelper };

@@ -9,8 +9,12 @@ import { check } from "express-validator";
 import { validateFields } from "../middlewares/validateFields.js";
 import { aprendizHelper } from "../helpers/aprendiz.helper.js";
 
-const { validateExistAprendizById, validateExistCurso, validateExistDocumento } =
-  aprendizHelper;
+const {
+  validateExistAprendizById,
+  validateExistCurso,
+  validateExistDocumento,
+  validateExistEmail,
+} = aprendizHelper;
 
 const aprendizVali = {};
 
@@ -29,7 +33,11 @@ aprendizVali.validateRegisterAprendiz = [
     .notEmpty()
     .bail()
     .isEmail()
-    .withMessage("El email no es valido"),
+    .withMessage("El email no es valido")
+    .bail()
+    .custom(async (email) => {
+      await validateExistEmail(email);
+    }),
   check("curso", "El curso es obligatorio")
     .notEmpty()
     .bail()
@@ -63,7 +71,11 @@ aprendizVali.validateUpdateAprendiz = [
     .notEmpty()
     .bail()
     .isEmail()
-    .withMessage("El email no es valido"),
+    .withMessage("El email no es valido")
+    .bail()
+    .custom(async (email, { req }) => {
+      await validateExistEmail(email, req.params.id);
+    }),
   check("curso", "El curso es obligatorio")
     .notEmpty()
     .bail()
